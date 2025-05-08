@@ -531,86 +531,6 @@ with st.sidebar:
     #doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
     # Hiển thị checkbox cho người dùng
     read_lesson_first = st.checkbox("Đọc nội dung bài học", value=False)
-    
-    #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
-    # if show_content:
-    #     #st.markdown("🧠 **Chọn một mục bên dưới để bắt đầu:**", unsafe_allow_html=True)
-    
-    #     lesson_parts = st.session_state.get("lesson_parts", [])
-    #     options = ["__none__"]  # option mặc định
-    #     option_labels = ["-- Chọn mục để bắt đầu --"]
-        
-    #     for idx, part in enumerate(lesson_parts):
-    #         part_id = part["id"]
-    #         tieu_de = part.get("tieu_de", "Không có tiêu đề")
-    #         progress_item = next((p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {})
-    #         trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
-        
-    #         label = f"✅ {part_id} – {tieu_de}" if trang_thai == "hoan_thanh" else f"{part_id} – {tieu_de}"
-    #         options.append(f"{part_id}|{idx}")
-    #         option_labels.append(label)
-        
-    #     # Dùng radio như bình thường
-    #     selected_raw = st.radio(
-    #         "Chọn mục để học:",
-    #         options=options,
-    #         format_func=lambda x: option_labels[options.index(x)],
-    #         key="selected_part_radio"
-    #     )
-        
-    #     # Bỏ qua nếu chưa chọn
-    #     if selected_raw != "__none__":
-    #         part_id, idx = selected_raw.split("|")
-    #         new_selection = lesson_parts[int(idx)]
-        
-    #         # So sánh tránh cập nhật dư thừa
-    #         current = st.session_state.get("selected_part_for_discussion", {})
-    #         if current.get("id") != part_id:
-    #             st.session_state["selected_part_for_discussion"] = new_selection
-    #             st.session_state["force_ai_to_ask"] = True
-    # if show_content:
-    #     lesson_parts = st.session_state.get("lesson_parts", [])
-    #     options = ["__none__"]
-    #     option_labels = ["-- Chọn mục để bắt đầu --"]
-    
-    #     for idx, part in enumerate(lesson_parts):
-    #         part_id = part["id"]
-    #         tieu_de = part.get("tieu_de", "Không có tiêu đề")
-    #         heading_level = part.get("heading_level", 0)
-    
-    #         # Trạng thái học
-    #         progress_item = next(
-    #             (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
-    #         )
-    #         trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
-    
-    #         # ✅ Thụt đầu dòng theo heading_level bằng dấu hiển thị rõ
-    #         indent_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
-    #         indent = indent_symbols[min(heading_level, len(indent_symbols) - 1)]
-    
-    #         prefix = "✅ " if trang_thai == "hoan_thanh" else ""
-    #         label = f"{indent}{prefix}{part_id} – {tieu_de}"
-    
-    #         options.append(f"{part_id}|{idx}")
-    #         option_labels.append(label)
-    
-    #     # Radio selector
-    #     selected_raw = st.radio(
-    #         "Chọn mục để học:",
-    #         options=options,
-    #         format_func=lambda x: option_labels[options.index(x)],
-    #         key="selected_part_radio"
-    #     )
-    
-    #     # Xử lý khi người dùng chọn mục
-    #     if selected_raw != "__none__":
-    #         part_id, idx = selected_raw.split("|")
-    #         new_selection = lesson_parts[int(idx)]
-    
-    #         current = st.session_state.get("selected_part_for_discussion", {})
-    #         if current.get("id") != part_id:
-    #             st.session_state["selected_part_for_discussion"] = new_selection
-    #             st.session_state["force_ai_to_ask"] = True
 
     if show_content:
         # Bước 1: Lấy danh sách headings từ lesson_parts
@@ -671,13 +591,6 @@ with st.sidebar:
         custom_sidebar_radio(headings)
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
-
-    #đọc bài học
-    # if doc_reading_enabled:
-    #     #audio_text = trich_dan_tu_pdf(ten_muc_duoc_chon)  # bạn đã có đoạn trích trong nội dung trước
-    #     audio_text = selected_part['noi_dung']
-    #     play_audio(audio_text)  # dùng hàm TTS sẵn có
-    #     time.sleep(len(audio_text) * 0.2)  # tuỳ chỉnh delay theo thời lượng
         
     #Lưu tiến độ học ra file JSON
     if st.button("💾 Lưu tiến độ học"):
@@ -909,7 +822,7 @@ import pandas as pd
 
 # Sau khi lấy all_parts xong
 if all_parts:
-    # 1. Sắp xếp
+    # 1. Sắp xếp mục học
     thu_tu_muc = {
         "ly_thuyet": 1,
         "bai_tap_co_giai": 2,
@@ -918,113 +831,70 @@ if all_parts:
         "du_an": 5
     }
     parts_sorted = sorted(all_parts, key=lambda x: thu_tu_muc.get(x["loai"], 999))
-
-    # Sinh HTML mục lục
-    toc_html = "<ul>"
-    for part in parts_sorted:
-        toc_html += f"<li><strong>{part['id']}</strong> – {part['tieu_de']} ({part['loai']})</li>"
-    toc_html += "</ul>"
-    
-    st.session_state["toc_html"] = toc_html  # lưu để dùng phía dưới
-
-    # 2. Hiển thị bảng mục lục (mục lục trên messages)
-    #st.markdown("### 📚 **Mục lục bài học**")
-
-    
-    df = pd.DataFrame(parts_sorted)
-    #st.dataframe(df[["id", "loai", "tieu_de"]]) #đang ẩn để dùng nút content
-
-    # 3. Lưu session để dùng tiếp
     st.session_state["lesson_parts"] = parts_sorted
 
-    # 👇 Chỉ gọi sinh câu hỏi nếu đã greeting và đã load đúng bài
+    # 2. Sinh mục lục HTML
+    toc_html = "<ul>" + "".join(
+        f"<li><strong>{part['id']}</strong> – {part['tieu_de']} ({part['loai']})</li>"
+        for part in parts_sorted
+    ) + "</ul>"
+    st.session_state["toc_html"] = toc_html
+
+    # 3. Nếu cần AI hỏi câu đầu
     if (
         st.session_state.get("force_ai_to_ask", False)
         and st.session_state.get("selected_part_for_discussion")
-        and st.session_state.get("lesson_parts")
-        and st.session_state.get("lesson_loaded") == st.session_state.get("lesson_source")  # 🔒 Phòng reset chèn lên
+        and st.session_state.get("lesson_loaded") == st.session_state.get("lesson_source")
     ):
         selected_part = st.session_state["selected_part_for_discussion"]
         question_prompt = f"""
-        Bây giờ người học đã chọn mục : "{selected_part['tieu_de']}" trong tài liệu đính kèm, hãy tiếp tục hướng dẫn người học từ đoạn này theo phong cách đã thiết lập từ đầu buổi học.
-        Nếu phần nội dung này là các câu hỏi trắc nghiệm thì trích dẫn câu trắc nghiệm được chọn đó hoặc nếu là nhiều câu hỏi trắc nghiệm nhưng tiêu đề chung không phải 1 câu thì lần lượt hiển thị câu hỏi trắc nghiệm.
-        Nội dung được trích ra từ tài liệu đính kèm:
-        ---
-        {selected_part['noi_dung']}
-        ---
-        """
+Bây giờ người học đã chọn mục: "{selected_part['tieu_de']}" trong tài liệu, hãy bắt đầu hướng dẫn.
 
-        question_promptFilter = f"""        
-        {selected_part['noi_dung']}
-        """
-        
-        #st.subheader("🧪 Nội dung gửi lên Gemini:")
-        #st.code(question_prompt, language="markdown")  # để debug prompt
-
-        
-        with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
-            user_message = {
+Nếu đây là phần trắc nghiệm, hãy lần lượt hiển thị các câu hỏi. Nội dung từ tài liệu:
+---
+{selected_part['noi_dung']}
+---
+"""
+        with st.spinner("🤖 Đang tạo nội dung từ phần bạn chọn..."):
+            st.session_state.messages.append({
                 "role": "user",
                 "parts": [{"text": question_prompt}]
-            }
-            user_messageFilter = {
-                "role": "user",
-                "parts": [{"text": question_promptFilter}]
-            }
-            #if read_lesson_first:
-            st.session_state.messages.append(user_messageFilter)
-        
-            # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
-            if "lesson_intro_indices" not in st.session_state:
-                st.session_state["lesson_intro_indices"] = []
-            lesson_intro_index = len(st.session_state.messages) - 1
-            st.session_state["lesson_intro_indices"].append(lesson_intro_index)
+            })
+            ai_response = chat_with_gemini(st.session_state.messages)
 
-            #Bước 2: Gợi ý cách viết prompt tốt (ngắn + rõ)
-            selected_part = st.session_state["selected_part_for_discussion"]
-
-            #Bước 3: Hiển thị câu hỏi AI phản hồi
-            ai_question = chat_with_gemini(st.session_state.messages)
-
-            #Xử lý kết quả:
-            if ai_question is None:
-                st.warning("⚠️ Gemini đang quá tải hoặc phản hồi lỗi. Vui lòng thử lại sau.")
+            if ai_response:
+                ai_response = clean_html_to_text(ai_response)
+                st.session_state.messages.append({
+                    "role": "model",
+                    "parts": [{"text": ai_response}]
+                })
             else:
-                ai_question = clean_html_to_text(ai_question)
-                #ai_question = format_mcq_options(ai_question)
-                #st.chat_message("🤖 Gia sư AI").markdown(ai_question)
-                st.session_state.messages.append({"role": "model", "parts": [{"text": ai_question}]})
-                st.session_state["force_ai_to_ask"] = False  # <- ✅ thêm dòng này
-        
-    # ✅ Nếu vừa khôi phục tiến độ, thông báo ra
+                st.warning("⚠️ Không nhận được phản hồi từ Gemini.")
+            st.session_state["force_ai_to_ask"] = False
+
+    # 4. Thông báo nếu khôi phục tiến độ
     if st.session_state.get("progress_restored"):
-        st.success(f"✅ Đã khôi phục tiến độ học từ {st.session_state['progress_restored']}.")
+        st.success(f"✅ Đã khôi phục tiến độ từ: {st.session_state['progress_restored']}")
         del st.session_state["progress_restored"]
 
-    # Nếu tài liệu mới, reset
+    # 5. Khởi tạo tiến độ nếu cần
     if st.session_state.get("lesson_source") != current_source:
         st.session_state["lesson_progress_initialized"] = False
         st.session_state["current_part_index"] = 0
 
-    # Khởi tạo tiến độ học chỉ 1 lần duy nhất
-    uploaded_json = None
-    for file in uploaded_files:
-        if file.name.endswith(".json"):
-            uploaded_json = file
-            break
-    
-    if "lesson_progress_initialized" not in st.session_state or not st.session_state["lesson_progress_initialized"]:
+    if not st.session_state.get("lesson_progress_initialized", False):
         init_lesson_progress(all_parts)
         st.session_state["lesson_progress_initialized"] = True
-    
-        # 👉 Merge ngay sau init
-        if uploaded_json:
-            uploaded_json.seek(0)
-            loaded_progress = json.load(uploaded_json)
-            merge_lesson_progress(st.session_state["lesson_progress"], loaded_progress)
-            st.session_state["progress_restored"] = uploaded_json.name  # 👉 Ghi tên file đã restore
 
-    # 🚀 Đảm bảo current_part_index luôn có
+        # Hợp nhất với file .json nếu có
+        for file in uploaded_files:
+            if file.name.endswith(".json"):
+                file.seek(0)
+                loaded_progress = json.load(file)
+                merge_lesson_progress(st.session_state["lesson_progress"], loaded_progress)
+                st.session_state["progress_restored"] = file.name
+                break
+
     if "current_part_index" not in st.session_state:
         st.session_state["current_part_index"] = 0
 else:
