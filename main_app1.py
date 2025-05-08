@@ -1244,6 +1244,9 @@ if user_input:
         
         # 3. Hiển thị phản hồi
         st.chat_message("🤖 Gia sư AI").markdown(reply)
+        # 🔊 Tự động phát âm thanh nếu bật
+        if st.session_state.get("enable_audio_playback", False):
+            render_audio_block(reply, autoplay=True)
 
   		# 🚀 TỰ ĐỘNG CHẤM ĐIỂM
         scoring_prompt = f"""
