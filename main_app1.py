@@ -1270,10 +1270,10 @@ if user_input:
             diem_so=diem_so
         )
         
-        b64 = generate_and_encode_audio(reply)
-        b64 = None
-        if st.session_state.get("enable_audio_playback", True):
-            b64 = generate_and_encode_audio(reply)
+        # b64 = generate_and_encode_audio(reply)
+        # b64 = None
+        # if st.session_state.get("enable_audio_playback", True):
+        #     b64 = generate_and_encode_audio(reply)
         
         # # Hiển thị nút nghe
         # if b64:
