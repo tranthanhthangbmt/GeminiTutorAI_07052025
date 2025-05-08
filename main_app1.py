@@ -814,9 +814,13 @@ def chat_with_gemini(messages):
     headers = {"Content-Type": "application/json"}
     params = {"key": API_KEY}
     
-    # Giữ prompt hệ thống + 6 tương tác gần nhất (3 lượt hỏi – đáp)
-    truncated = messages[:1] + messages[-6:] if len(messages) > 7 else messages
-    data = {"contents": truncated}
+    # Cắt bớt lịch sử nếu dài
+    truncated = messages[-6:] if len(messages) > 6 else messages
+
+    data = {
+        "contents": truncated,
+        "system_instruction": {"role": "system", "parts": [{"text": PROMPT_LESSON_CONTEXT}]}
+    }
 
     response = requests.post(GEMINI_API_URL, headers=headers, params=params, json=data)
 
@@ -826,7 +830,7 @@ def chat_with_gemini(messages):
         except Exception as e:
             return f"Lỗi phân tích phản hồi: {e}"
     elif response.status_code == 503:
-        return None  # model quá tải
+        return None
     else:
         return f"Lỗi API: {response.status_code} - {response.text}"
 
@@ -1084,9 +1088,9 @@ if pdf_context:
         greeting += "\n\nBạn đã sẵn sàng chưa?"
 
         st.session_state.messages = [
-            {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
             {"role": "model", "parts": [{"text": greeting}]}
         ]
+        st.session_state["lesson_context_prompt"] = PROMPT_LESSON_CONTEXT  # lưu riêng để chèn khi gọi API
         st.session_state["pending_ai_question"] = True  # ✅ Cho biết AI cần hỏi sau khi greeting
         st.session_state.lesson_source = current_source
         st.session_state.lesson_loaded = current_source  # đánh dấu đã load
