@@ -1144,6 +1144,7 @@ if pdf_context:
 
         # ✅ Sau khi greeting xong, nếu có pending câu hỏi thì hỏi
         if st.session_state.get("pending_ai_question", False):
+            st.session_state["should_generate_first_question"] = True  # ✅ Đánh dấu cần hỏi
             st.session_state["force_ai_to_ask"] = True
             st.session_state["pending_ai_question"] = False
             st.rerun()  # 🔁 Đảm bảo buổi học tiếp tục đúng thứ tự
