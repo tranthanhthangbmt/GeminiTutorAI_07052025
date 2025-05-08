@@ -629,8 +629,10 @@ with st.sidebar:
                         st.session_state["selected_part_for_discussion"] = new_selection
                         st.session_state["force_ai_to_ask"] = True
     
-    # Kích hoạt Firebase mặc định
-    st.session_state["firebase_enabled"] = True
+    
+        custom_sidebar_radio(headings)
+        # Kích hoạt Firebase mặc định
+        st.session_state["firebase_enabled"] = True
 
     #đọc bài học
     # if doc_reading_enabled:
