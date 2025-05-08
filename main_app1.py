@@ -958,6 +958,7 @@ if all_parts:
         st.session_state.get("force_ai_to_ask", False)
         and st.session_state.get("selected_part_for_discussion")
         and st.session_state.get("lesson_parts")
+        and st.session_state.get("lesson_loaded")  # ✅ CHỈ hỏi khi greeting đã xong
     ):
         selected_part = st.session_state["selected_part_for_discussion"]
         question_prompt = f"""
@@ -1137,8 +1138,15 @@ if pdf_context:
             {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
             {"role": "model", "parts": [{"text": greeting}]}
         ]
+        st.session_state["pending_ai_question"] = True  # ✅ Cho biết AI cần hỏi sau khi greeting
         st.session_state.lesson_source = current_source
         st.session_state.lesson_loaded = current_source  # đánh dấu đã load
+
+        # ✅ Sau khi greeting xong, nếu có pending câu hỏi thì hỏi
+        if st.session_state.get("pending_ai_question", False):
+            st.session_state["force_ai_to_ask"] = True
+            st.session_state["pending_ai_question"] = False
+            st.rerun()  # 🔁 Đảm bảo buổi học tiếp tục đúng thứ tự
         
     #Phần chọn bài học
     lesson_title = selected_lesson if selected_lesson != "👉 Chọn bài học..." else "Bài học tùy chỉnh"
