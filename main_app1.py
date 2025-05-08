@@ -822,7 +822,11 @@ def chat_with_gemini(messages):
         "system_instruction": {"role": "system", "parts": [{"text": PROMPT_LESSON_CONTEXT}]}
     }
 
-    response = requests.post(GEMINI_API_URL, headers=headers, params=params, json=data)
+    #response = requests.post(GEMINI_API_URL, headers=headers, params=params, json=data)
+    gemini_url = st.session_state.get("GEMINI_API_URL", "")
+    if not gemini_url:
+        raise ValueError("GEMINI_API_URL is not set in session_state.")
+    response = requests.post(gemini_url, headers=headers, params=params, json=data)
 
     if response.status_code == 200:
         try:
