@@ -450,7 +450,7 @@ with st.sidebar:
     """)
     "[Lấy API key tại đây](https://aistudio.google.com/app/apikey)"
     # 🔊 Cho phép bật/tắt tự động phát audio
-    enable_audio_default = False  # ✅ Mặc định: Bật nghe audio
+    enable_audio_default = True  # ✅ Mặc định: Bật nghe audio
     st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
     if st.session_state.get("show_sidebar_inputs", False):
         st.markdown("📚 **Chọn bài học hoặc tải lên bài học**")
