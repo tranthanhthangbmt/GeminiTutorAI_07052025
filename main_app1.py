@@ -398,7 +398,14 @@ with st.sidebar:
     else:
         input_key = st.session_state.GEMINI_API_KEY
     
-    input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
+    #input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
+    # ❗ Ẩn ô nhập nếu chưa có tài liệu hoặc bài học
+    has_lesson = not (
+        selected_lesson == "👉 Chọn bài học..." and not uploaded_files
+    )
+    
+    if has_lesson:
+        input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
 
     # 🔄 Chọn mô hình Gemini
     model_options = {
