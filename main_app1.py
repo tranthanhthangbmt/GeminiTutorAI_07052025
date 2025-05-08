@@ -400,8 +400,9 @@ with st.sidebar:
     
     #input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
     # ❗ Ẩn ô nhập nếu chưa có tài liệu hoặc bài học
+    selected_lesson_val = st.session_state.get("selected_lesson", "👉 Chọn bài học...")
     has_lesson = not (
-        selected_lesson == "👉 Chọn bài học..." and not uploaded_files
+        selected_lesson_val == "👉 Chọn bài học..." and not uploaded_files
     )
     
     if has_lesson:
@@ -463,6 +464,7 @@ with st.sidebar:
         st.markdown("📚 **Chọn bài học hoặc tải lên bài học**")
         
         selected_lesson = st.selectbox("📖 Chọn bài học", list(available_lessons.keys()))
+        st.session_state["selected_lesson"] = selected_lesson
         default_link = available_lessons[selected_lesson]
         selected_lesson_link = available_lessons.get(selected_lesson, "").strip()
         
