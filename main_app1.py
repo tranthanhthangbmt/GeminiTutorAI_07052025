@@ -450,7 +450,7 @@ with st.sidebar:
     """)
     "[Lấy API key tại đây](https://aistudio.google.com/app/apikey)"
     # 🔊 Cho phép bật/tắt tự động phát audio
-    enable_audio_default = True  # ✅ Mặc định: Bật nghe audio
+    enable_audio_default = False  # ✅ Mặc định: Bật nghe audio
     st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
     if st.session_state.get("show_sidebar_inputs", False):
         st.markdown("📚 **Chọn bài học hoặc tải lên bài học**")
@@ -531,6 +531,86 @@ with st.sidebar:
     #doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
     # Hiển thị checkbox cho người dùng
     read_lesson_first = st.checkbox("Đọc nội dung bài học", value=False)
+    
+    #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
+    # if show_content:
+    #     #st.markdown("🧠 **Chọn một mục bên dưới để bắt đầu:**", unsafe_allow_html=True)
+    
+    #     lesson_parts = st.session_state.get("lesson_parts", [])
+    #     options = ["__none__"]  # option mặc định
+    #     option_labels = ["-- Chọn mục để bắt đầu --"]
+        
+    #     for idx, part in enumerate(lesson_parts):
+    #         part_id = part["id"]
+    #         tieu_de = part.get("tieu_de", "Không có tiêu đề")
+    #         progress_item = next((p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {})
+    #         trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
+        
+    #         label = f"✅ {part_id} – {tieu_de}" if trang_thai == "hoan_thanh" else f"{part_id} – {tieu_de}"
+    #         options.append(f"{part_id}|{idx}")
+    #         option_labels.append(label)
+        
+    #     # Dùng radio như bình thường
+    #     selected_raw = st.radio(
+    #         "Chọn mục để học:",
+    #         options=options,
+    #         format_func=lambda x: option_labels[options.index(x)],
+    #         key="selected_part_radio"
+    #     )
+        
+    #     # Bỏ qua nếu chưa chọn
+    #     if selected_raw != "__none__":
+    #         part_id, idx = selected_raw.split("|")
+    #         new_selection = lesson_parts[int(idx)]
+        
+    #         # So sánh tránh cập nhật dư thừa
+    #         current = st.session_state.get("selected_part_for_discussion", {})
+    #         if current.get("id") != part_id:
+    #             st.session_state["selected_part_for_discussion"] = new_selection
+    #             st.session_state["force_ai_to_ask"] = True
+    # if show_content:
+    #     lesson_parts = st.session_state.get("lesson_parts", [])
+    #     options = ["__none__"]
+    #     option_labels = ["-- Chọn mục để bắt đầu --"]
+    
+    #     for idx, part in enumerate(lesson_parts):
+    #         part_id = part["id"]
+    #         tieu_de = part.get("tieu_de", "Không có tiêu đề")
+    #         heading_level = part.get("heading_level", 0)
+    
+    #         # Trạng thái học
+    #         progress_item = next(
+    #             (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
+    #         )
+    #         trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
+    
+    #         # ✅ Thụt đầu dòng theo heading_level bằng dấu hiển thị rõ
+    #         indent_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+    #         indent = indent_symbols[min(heading_level, len(indent_symbols) - 1)]
+    
+    #         prefix = "✅ " if trang_thai == "hoan_thanh" else ""
+    #         label = f"{indent}{prefix}{part_id} – {tieu_de}"
+    
+    #         options.append(f"{part_id}|{idx}")
+    #         option_labels.append(label)
+    
+    #     # Radio selector
+    #     selected_raw = st.radio(
+    #         "Chọn mục để học:",
+    #         options=options,
+    #         format_func=lambda x: option_labels[options.index(x)],
+    #         key="selected_part_radio"
+    #     )
+    
+    #     # Xử lý khi người dùng chọn mục
+    #     if selected_raw != "__none__":
+    #         part_id, idx = selected_raw.split("|")
+    #         new_selection = lesson_parts[int(idx)]
+    
+    #         current = st.session_state.get("selected_part_for_discussion", {})
+    #         if current.get("id") != part_id:
+    #             st.session_state["selected_part_for_discussion"] = new_selection
+    #             st.session_state["force_ai_to_ask"] = True
 
     if show_content:
         # Bước 1: Lấy danh sách headings từ lesson_parts
@@ -591,6 +671,13 @@ with st.sidebar:
         custom_sidebar_radio(headings)
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
+
+    #đọc bài học
+    # if doc_reading_enabled:
+    #     #audio_text = trich_dan_tu_pdf(ten_muc_duoc_chon)  # bạn đã có đoạn trích trong nội dung trước
+    #     audio_text = selected_part['noi_dung']
+    #     play_audio(audio_text)  # dùng hàm TTS sẵn có
+    #     time.sleep(len(audio_text) * 0.2)  # tuỳ chỉnh delay theo thời lượng
         
     #Lưu tiến độ học ra file JSON
     if st.button("💾 Lưu tiến độ học"):
@@ -687,10 +774,19 @@ if not API_KEY:
     st.error("❌ Thiếu Gemini API Key. Vui lòng nhập ở sidebar hoặc thiết lập biến môi trường 'GEMINI_API_KEY'.")
     st.stop()
 
+#input file bài học
+#if selected_lesson == "👉 Chọn bài học..." and uploaded_file is None:
 if selected_lesson == "👉 Chọn bài học..." and not uploaded_files: #kiểm tra là đã tải liên nhiều file
     st.info("📥 Hãy tải lên tài liệu PDF/TXT hoặc chọn một bài học từ danh sách bên trên để bắt đầu.") 
     st.stop()
 
+# Endpoint API Gemini
+#GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent" 
+#GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent"
+GEMINI_API_URL = st.session_state.get("GEMINI_API_URL", "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent")
+
+#PDF_URL = "https://raw.githubusercontent.com/tranthanhthangbmt/AITutor_Gemini/main/handoutBuoi4.pdf"
+#pdf_context = extract_pdf_text_from_url(PDF_URL)
 pdf_context = ""
 
 # Nếu có file upload thì lấy nội dung từ file upload
@@ -727,19 +823,11 @@ def chat_with_gemini(messages):
     headers = {"Content-Type": "application/json"}
     params = {"key": API_KEY}
     
-    # Cắt bớt lịch sử nếu dài
-    truncated = messages[-6:] if len(messages) > 6 else messages
+    # Giữ prompt hệ thống + 6 tương tác gần nhất (3 lượt hỏi – đáp)
+    truncated = messages[:1] + messages[-6:] if len(messages) > 7 else messages
+    data = {"contents": truncated}
 
-    data = {
-        "contents": truncated,
-        "system_instruction": {"role": "system", "parts": [{"text": PROMPT_LESSON_CONTEXT}]}
-    }
-
-    #response = requests.post(GEMINI_API_URL, headers=headers, params=params, json=data)
-    gemini_url = st.session_state.get("GEMINI_API_URL", "")
-    if not gemini_url:
-        raise ValueError("GEMINI_API_URL is not set in session_state.")
-    response = requests.post(gemini_url, headers=headers, params=params, json=data)
+    response = requests.post(GEMINI_API_URL, headers=headers, params=params, json=data)
 
     if response.status_code == 200:
         try:
@@ -747,7 +835,7 @@ def chat_with_gemini(messages):
         except Exception as e:
             return f"Lỗi phân tích phản hồi: {e}"
     elif response.status_code == 503:
-        return None
+        return None  # model quá tải
     else:
         return f"Lỗi API: {response.status_code} - {response.text}"
 
@@ -757,14 +845,10 @@ def chat_with_gemini(messages):
 
 #thiết lập ban đầu tutor AI
 if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-    # Chỉ chèn greeting nếu chưa có bài học sẵn
-    if not st.session_state.get("lesson_loaded"):
-        st.session_state.messages = [
-            {"role": "user", "parts": [{"text": SYSTEM_PROMPT_Tutor_AI}]},
-            {"role": "model", "parts": [{"text": "Chào bạn! Mình là gia sư AI 🎓\n\nHãy chọn bài học hoặc tải tài liệu để bắt đầu nhé!"}]}
-        ]
+    st.session_state.messages = [
+        {"role": "user", "parts": [{"text": SYSTEM_PROMPT_Tutor_AI}]},
+        {"role": "model", "parts": [{"text": "Chào bạn! Mình là gia sư AI 🎓\n\nHãy chọn bài học hoặc nhập link tài liệu bên sidebar để mình bắt đầu chuẩn bị nội dung buổi học nhé!"}]}
+    ]
 
 import tempfile
 import requests
@@ -826,7 +910,7 @@ import pandas as pd
 
 # Sau khi lấy all_parts xong
 if all_parts:
-    # 1. Sắp xếp mục học
+    # 1. Sắp xếp
     thu_tu_muc = {
         "ly_thuyet": 1,
         "bai_tap_co_giai": 2,
@@ -835,70 +919,151 @@ if all_parts:
         "du_an": 5
     }
     parts_sorted = sorted(all_parts, key=lambda x: thu_tu_muc.get(x["loai"], 999))
+
+    # Sinh HTML mục lục
+    toc_html = "<ul>"
+    for part in parts_sorted:
+        toc_html += f"<li><strong>{part['id']}</strong> – {part['tieu_de']} ({part['loai']})</li>"
+    toc_html += "</ul>"
+    
+    st.session_state["toc_html"] = toc_html  # lưu để dùng phía dưới
+
+    # 2. Hiển thị bảng mục lục (mục lục trên messages)
+    #st.markdown("### 📚 **Mục lục bài học**")
+
+    
+    df = pd.DataFrame(parts_sorted)
+    #st.dataframe(df[["id", "loai", "tieu_de"]]) #đang ẩn để dùng nút content
+
+    # 3. Lưu session để dùng tiếp
     st.session_state["lesson_parts"] = parts_sorted
 
-    # 2. Sinh mục lục HTML
-    toc_html = "<ul>" + "".join(
-        f"<li><strong>{part['id']}</strong> – {part['tieu_de']} ({part['loai']})</li>"
-        for part in parts_sorted
-    ) + "</ul>"
-    st.session_state["toc_html"] = toc_html
+    # 📌 Chọn phần học từ danh sách Content (mục lục trên messages)
+    # with st.expander("🎯 Chọn mục để bắt đầu từ Content", expanded=False):
+    #     lesson_part_titles = [f"{part['id']} – {part['tieu_de']} ({part['loai']})" for part in st.session_state["lesson_parts"]]
+    #     selected_idx = st.selectbox("🔍 Chọn phần học để AI đặt câu hỏi:", list(range(len(lesson_part_titles))), format_func=lambda i: lesson_part_titles[i])
+    
+    #     if st.button("🚀 Bắt đầu mục này"):
+    #         selected_part = st.session_state["lesson_parts"][selected_idx]
+    #         st.session_state["selected_part_for_discussion"] = selected_part
+    #         st.session_state["force_ai_to_ask"] = True
+    #         #st.rerun()
 
-    # 3. Nếu cần AI hỏi câu đầu
+    #         # Chỉ giữ lại prompt hệ thống để tránh lặp lại phần chào hỏi
+    #         if st.session_state.messages:
+    #             st.session_state.messages = [st.session_state.messages[0]]
+
+    # 👉 Nếu người dùng chọn một phần → sinh câu hỏi kiểm tra
     if (
         st.session_state.get("force_ai_to_ask", False)
         and st.session_state.get("selected_part_for_discussion")
-        and st.session_state.get("lesson_loaded") == st.session_state.get("lesson_source")
+        and st.session_state.get("lesson_parts")
     ):
         selected_part = st.session_state["selected_part_for_discussion"]
         question_prompt = f"""
-Bây giờ người học đã chọn mục: "{selected_part['tieu_de']}" trong tài liệu, hãy bắt đầu hướng dẫn.
+        Bây giờ người học đã chọn mục : "{selected_part['tieu_de']}" trong tài liệu đính kèm, hãy tiếp tục hướng dẫn người học từ đoạn này theo phong cách đã thiết lập từ đầu buổi học.
+        Nếu phần nội dung này là các câu hỏi trắc nghiệm thì trích dẫn câu trắc nghiệm được chọn đó hoặc nếu là nhiều câu hỏi trắc nghiệm nhưng tiêu đề chung không phải 1 câu thì lần lượt hiển thị câu hỏi trắc nghiệm.
+        Nội dung được trích ra từ tài liệu đính kèm:
+        ---
+        {selected_part['noi_dung']}
+        ---
+        """
 
-Nếu đây là phần trắc nghiệm, hãy lần lượt hiển thị các câu hỏi. Nội dung từ tài liệu:
----
-{selected_part['noi_dung']}
----
-"""
-        with st.spinner("🤖 Đang tạo nội dung từ phần bạn chọn..."):
-            st.session_state.messages.append({
+        question_promptFilter = f"""        
+        {selected_part['noi_dung']}
+        """
+        
+        #st.subheader("🧪 Nội dung gửi lên Gemini:")
+        #st.code(question_prompt, language="markdown")  # để debug prompt
+
+        
+        with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
+            user_message = {
                 "role": "user",
                 "parts": [{"text": question_prompt}]
-            })
-            ai_response = chat_with_gemini(st.session_state.messages)
+            }
+            user_messageFilter = {
+                "role": "user",
+                "parts": [{"text": question_promptFilter}]
+            }
+            #if read_lesson_first:
+            st.session_state.messages.append(user_messageFilter)
+        
+            # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
+            if "lesson_intro_indices" not in st.session_state:
+                st.session_state["lesson_intro_indices"] = []
+            lesson_intro_index = len(st.session_state.messages) - 1
+            st.session_state["lesson_intro_indices"].append(lesson_intro_index)
+        
+            # ✅ Phát audio NGAY nếu bật tính năng đọc bài học
+            # if st.session_state.get("read_lesson_first", False) and st.session_state.get("enable_audio_playback", True):
+            #     render_audio_block(question_prompt, autoplay=True)
 
-            if ai_response:
-                ai_response = clean_html_to_text(ai_response)
-                st.session_state.messages.append({
-                    "role": "model",
-                    "parts": [{"text": ai_response}]
-                })
+            # ✅ Phát audio ngay nếu bật chế độ đọc bài học
+            # if st.session_state.get("read_lesson_first") and st.session_state.get("enable_audio_playback", True):
+            #     render_audio_block(question_prompt, autoplay=True)
+
+            # # 🔊 Phát audio tự động nội dung vừa thêm            
+            # # Nếu người dùng chọn checkbox và có nội dung để đọc
+            # if read_lesson_first and question_prompt:
+            #     b64 = None
+            #     if st.session_state.get("enable_audio_playback", True):
+            #         b64 = generate_and_encode_audio(question_prompt)
+                
+            #     # Hiển thị audio player
+            #     if b64:
+            #         autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
+            #         st.markdown(f"""
+            #         <audio controls {autoplay_attr}>
+            #             <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+            #             Trình duyệt của bạn không hỗ trợ phát âm thanh.
+            #         </audio>
+            #         """, unsafe_allow_html=True)
+
+            #Bước 2: Gợi ý cách viết prompt tốt (ngắn + rõ)
+            selected_part = st.session_state["selected_part_for_discussion"]
+
+            #Bước 3: Hiển thị câu hỏi AI phản hồi
+            ai_question = chat_with_gemini(st.session_state.messages)
+
+            #Xử lý kết quả:
+            if ai_question is None:
+                st.warning("⚠️ Gemini đang quá tải hoặc phản hồi lỗi. Vui lòng thử lại sau.")
             else:
-                st.warning("⚠️ Không nhận được phản hồi từ Gemini.")
-            st.session_state["force_ai_to_ask"] = False
-
-    # 4. Thông báo nếu khôi phục tiến độ
+                ai_question = clean_html_to_text(ai_question)
+                #ai_question = format_mcq_options(ai_question)
+                #st.chat_message("🤖 Gia sư AI").markdown(ai_question)
+                st.session_state.messages.append({"role": "model", "parts": [{"text": ai_question}]})
+        
+    # ✅ Nếu vừa khôi phục tiến độ, thông báo ra
     if st.session_state.get("progress_restored"):
-        st.success(f"✅ Đã khôi phục tiến độ từ: {st.session_state['progress_restored']}")
+        st.success(f"✅ Đã khôi phục tiến độ học từ {st.session_state['progress_restored']}.")
         del st.session_state["progress_restored"]
 
-    # 5. Khởi tạo tiến độ nếu cần
+    # Nếu tài liệu mới, reset
     if st.session_state.get("lesson_source") != current_source:
         st.session_state["lesson_progress_initialized"] = False
         st.session_state["current_part_index"] = 0
 
-    if not st.session_state.get("lesson_progress_initialized", False):
+    # Khởi tạo tiến độ học chỉ 1 lần duy nhất
+    uploaded_json = None
+    for file in uploaded_files:
+        if file.name.endswith(".json"):
+            uploaded_json = file
+            break
+    
+    if "lesson_progress_initialized" not in st.session_state or not st.session_state["lesson_progress_initialized"]:
         init_lesson_progress(all_parts)
         st.session_state["lesson_progress_initialized"] = True
+    
+        # 👉 Merge ngay sau init
+        if uploaded_json:
+            uploaded_json.seek(0)
+            loaded_progress = json.load(uploaded_json)
+            merge_lesson_progress(st.session_state["lesson_progress"], loaded_progress)
+            st.session_state["progress_restored"] = uploaded_json.name  # 👉 Ghi tên file đã restore
 
-        # Hợp nhất với file .json nếu có
-        for file in uploaded_files:
-            if file.name.endswith(".json"):
-                file.seek(0)
-                loaded_progress = json.load(file)
-                merge_lesson_progress(st.session_state["lesson_progress"], loaded_progress)
-                st.session_state["progress_restored"] = file.name
-                break
-
+    # 🚀 Đảm bảo current_part_index luôn có
     if "current_part_index" not in st.session_state:
         st.session_state["current_part_index"] = 0
 else:
@@ -916,6 +1081,8 @@ if pdf_context:
             break
 
     # Xác định tên bài học hợp lý
+    #fallback_name = uploaded_file.name if uploaded_file else selected_lesson
+    #fallback_name = uploaded_files[0].name if uploaded_files else selected_lesson
     if uploaded_files:
         fallback_name = " + ".join([f.name for f in uploaded_files])
     elif selected_lesson != "👉 Chọn bài học...":
@@ -966,19 +1133,11 @@ if pdf_context:
         greeting += "\n\nBạn đã sẵn sàng chưa?"
 
         st.session_state.messages = [
+            {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
             {"role": "model", "parts": [{"text": greeting}]}
         ]
-        st.session_state["lesson_context_prompt"] = PROMPT_LESSON_CONTEXT  # lưu riêng để chèn khi gọi API
-        st.session_state["pending_ai_question"] = True  # ✅ Cho biết AI cần hỏi sau khi greeting
         st.session_state.lesson_source = current_source
         st.session_state.lesson_loaded = current_source  # đánh dấu đã load
-
-        # ✅ Sau khi greeting xong, nếu có pending câu hỏi thì hỏi
-        if st.session_state.get("pending_ai_question", False):
-            st.session_state["should_generate_first_question"] = True  # ✅ Đánh dấu cần hỏi
-            st.session_state["force_ai_to_ask"] = True
-            st.session_state["pending_ai_question"] = False
-            st.rerun()  # 🔁 Đảm bảo buổi học tiếp tục đúng thứ tự
         
     #Phần chọn bài học
     lesson_title = selected_lesson if selected_lesson != "👉 Chọn bài học..." else "Bài học tùy chỉnh"
@@ -995,35 +1154,138 @@ if pdf_context:
     --- END OF HANDBOOK CONTENT ---
     """
 
-# ================================
-# 📥 Ô nhập câu hỏi & xử lý logic
-# ================================
-user_input = st.chat_input("💬 Nhập câu hỏi hoặc câu trả lời...")
+# Hiển thị lịch sử chat
+previous_msg = None
+
+for idx, msg in enumerate(st.session_state.messages[1:]):  
+    role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
+    #st.chat_message(role).write(msg["parts"][0]["text"])
+    # text = format_pdf_text_for_display(msg["parts"][0]["text"])
+    # st.chat_message(role).markdown(text)
+    formatted_text = format_pdf_text_for_display(msg["parts"][0]["text"])
+    st.chat_message(role).markdown(formatted_text)
+
+    absolute_idx = idx + 1  # do đã bỏ messages[0]
+    is_last = idx == len(st.session_state.messages[1:]) - 1
+
+    # ✅ Greeting ban đầu — ưu tiên dùng audio có sẵn nếu có
+    if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+        greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
+        render_audio_block(greeting_text, autoplay=True)
+
+    # ✅ Nếu là Gia sư AI và bật audio
+    if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+        if is_last and previous_msg:
+            # 👉 Ghép phát message trước nếu là cuối
+            render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
+        elif st.session_state.get("read_lesson_first", False):
+            # 👉 Phát các đoạn AI ở giữa nếu bật đọc bài học
+            render_audio_block(msg["parts"][0]["text"], autoplay=True)
+
+    previous_msg = msg
+
+# Ô nhập câu hỏi mới
+user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
 
 if user_input:
-    # 1. Hiển thị nội dung học sinh vừa gửi
+    # 1. Hiển thị câu trả lời học sinh
     st.chat_message("🧑‍🎓 Học sinh").write(user_input)
     st.session_state.messages.append({"role": "user", "parts": [{"text": user_input}]})
 
     # 2. Gọi AI phản hồi
-    with st.spinner("🤖 Gia sư AI đang trả lời..."):
+    with st.spinner("🤖 Đang phản hồi..."):
+        # Lấy phần học hiện tại
+        uncompleted_parts = [part for part in st.session_state["lesson_progress"] if part["trang_thai"] != "hoan_thanh"]
+
+        if not uncompleted_parts:
+            st.success("🎉 Bạn đã hoàn thành toàn bộ bài học! Chúc mừng!")
+            st.stop()
+        
+        # Chọn phần chưa hoàn thành đầu tiên
+        current_part = uncompleted_parts[0]
+        
+        # Gán luôn current_part_id
+        st.session_state["current_part_id"] = current_part["id"]
+        
+        # Tạo prompt tutor AI dựa trên nội dung phần hiện tại
+        prompt = f"""
+        Dựa trên nội dung sau, hãy đặt 1 câu hỏi kiểm tra hiểu biết cho học sinh, rồi chờ học sinh trả lời:
+        ---
+        {current_part['noi_dung']}
+        ---
+        Hãy đặt câu hỏi ngắn gọn, rõ ràng, liên quan trực tiếp đến nội dung trên.
+        """
+        
         reply = chat_with_gemini(st.session_state.messages)
+
+        # Nếu có thể xuất HTML (như <p>...</p>)
         reply = clean_html_to_text(reply)
+        
+        # Xử lý trắc nghiệm tách dòng
         reply = format_mcq_options(reply)
 
-        # 3. Lưu và hiển thị phản hồi
-        st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
+        if st.session_state.get("firebase_enabled", False):
+            save_exchange_to_firestore(
+                user_id=st.session_state.get("user_id", f"user_{uuid.uuid4().hex[:8]}"),
+                lesson_source=st.session_state.get("lesson_source", "Chua_xac_dinh"),
+                question=user_input,
+                answer=reply,
+                session_id=st.session_state.get("session_id", "default")
+            )
+        
+        # 3. Hiển thị phản hồi
         st.chat_message("🤖 Gia sư AI").markdown(reply)
 
-# =============================
-# 📜 Hiển thị lại toàn bộ lịch sử chat
-# =============================
-for idx, msg in enumerate(st.session_state.messages):
-    role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
-    formatted_text = format_pdf_text_for_display(msg["parts"][0]["text"])
-    st.chat_message(role).markdown(formatted_text)
+  		# 🚀 TỰ ĐỘNG CHẤM ĐIỂM
+        scoring_prompt = f"""
+	    Chấm điểm câu trả lời sau trên thang điểm 0–100, chỉ trả về số, không giải thích.
+	    ---
+	    Câu trả lời: {user_input}
+	    ---
+	    """
+     
+        diem_raw = chat_with_gemini([
+	        {"role": "user", "parts": [{"text": scoring_prompt}]}
+	    ])
+     
+        try:
+	        diem_so = int(re.findall(r"\d+", diem_raw)[0])
+        except:
+            diem_so = 90  # fallback nếu có lỗi
+        
+	    # Cập nhật tiến độ
+        update_progress(
+            #part_id=st.session_state.get("current_part_id", "UNKNOWN_PART"),
+            part_id=current_part["id"],
+            trang_thai="hoan_thanh",
+            diem_so=diem_so
+        )
+        
+        #b64 = generate_and_encode_audio(reply)
+        # b64 = None
+        # if st.session_state.get("enable_audio_playback", True):
+        #     b64 = generate_and_encode_audio(reply)
+        
+        # # Hiển thị nút nghe
+        # if b64:
+        #     autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
+        #     st.markdown(f"""
+        #     <audio controls {autoplay_attr}>
+        #         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+        #         Trình duyệt của bạn không hỗ trợ phát âm thanh.
+        #     </audio>
+        #     """, unsafe_allow_html=True)
 
-    # 🔊 Phát âm nếu có bật tự động
-    if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
-        is_last_ai = idx == len(st.session_state.messages) - 1
-        render_audio_block(msg["parts"][0]["text"], autoplay=is_last_ai)
+    # Chuyển biểu thức toán trong ngoặc đơn => LaTeX inline
+    #reply = convert_parentheses_to_latex(reply)
+    #reply_processed = convert_to_mathjax1(reply)
+
+    # Hiển thị Markdown để MathJax render công thức
+    #st.chat_message("🤖 Gia sư AI").markdown(reply_processed)
+    #st.chat_message("🤖 Gia sư AI").markdown(reply)
+
+    # Lưu lại phản hồi gốc
+    st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
+
+    #Khi học sinh trả lời xong → chấm điểm → cập nhật tiến độ cho
+    st.session_state["current_part_index"] += 1
