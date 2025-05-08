@@ -953,12 +953,12 @@ if all_parts:
     #         if st.session_state.messages:
     #             st.session_state.messages = [st.session_state.messages[0]]
 
-    # 👉 Nếu người dùng chọn một phần → sinh câu hỏi kiểm tra
+    # 👇 Chỉ gọi sinh câu hỏi nếu đã greeting và đã load đúng bài
     if (
         st.session_state.get("force_ai_to_ask", False)
         and st.session_state.get("selected_part_for_discussion")
         and st.session_state.get("lesson_parts")
-        and st.session_state.get("lesson_loaded")  # ✅ CHỈ hỏi khi greeting đã xong
+        and st.session_state.get("lesson_loaded") == st.session_state.get("lesson_source")  # 🔒 Phòng reset chèn lên
     ):
         selected_part = st.session_state["selected_part_for_discussion"]
         question_prompt = f"""
