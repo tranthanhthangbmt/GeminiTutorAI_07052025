@@ -1312,7 +1312,9 @@ last_ai_idx = max(
     default=-1
 )
 
-for idx, msg in enumerate(st.session_state.messages[1:]):  
+#for idx, msg in enumerate(st.session_state.messages[1:]):  
+start_index = 2 if st.session_state.get("greeted", False) else 1
+for idx, msg in enumerate(st.session_state.messages[start_index:]):
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     formatted_text = format_pdf_text_for_display(msg["parts"][0]["text"])
     st.chat_message(role).markdown(formatted_text)
