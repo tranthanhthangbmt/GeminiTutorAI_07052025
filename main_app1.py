@@ -119,34 +119,6 @@ db = init_firestore()
 
 doc_reading_enabled = False
 
-html_string = """
-<html>
-<head>
-<script>
-  function handleKeyPress(event) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();  // Ngăn chặn hành vi gửi tin nhắn
-      // Thực hiện hành động gửi ở đây, ví dụ: gửi form hoặc gọi hàm
-      alert("Shift + Enter để gửi!");
-    } else if (event.key === "Enter" && event.shiftKey) {
-      // Hành vi khi nhấn Shift + Enter (ví dụ gửi form hoặc gọi hàm)
-      alert("Tin nhắn đã được gửi!");
-    }
-  }
-  
-  window.onload = function() {
-    document.getElementById("chat_input").addEventListener("keydown", handleKeyPress);
-  };
-</script>
-</head>
-<body>
-  <textarea id="chat_input" rows="4" cols="50"></textarea>
-</body>
-</html>
-"""
-
-components.html(html_string, height=200)
-
 #from dashboard import show_progress_dashboard, show_part_detail_table
 
 #for data firebase
