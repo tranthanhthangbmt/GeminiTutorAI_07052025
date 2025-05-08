@@ -757,10 +757,14 @@ def chat_with_gemini(messages):
 
 #thiết lập ban đầu tutor AI
 if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "user", "parts": [{"text": SYSTEM_PROMPT_Tutor_AI}]},
-        {"role": "model", "parts": [{"text": "Chào bạn! Mình là gia sư AI 🎓\n\nHãy chọn bài học hoặc nhập link tài liệu bên sidebar để mình bắt đầu chuẩn bị nội dung buổi học nhé!"}]}
-    ]
+    st.session_state.messages = []
+
+    # Chỉ chèn greeting nếu chưa có bài học sẵn
+    if not st.session_state.get("lesson_loaded"):
+        st.session_state.messages = [
+            {"role": "user", "parts": [{"text": SYSTEM_PROMPT_Tutor_AI}]},
+            {"role": "model", "parts": [{"text": "Chào bạn! Mình là gia sư AI 🎓\n\nHãy chọn bài học hoặc tải tài liệu để bắt đầu nhé!"}]}
+        ]
 
 import tempfile
 import requests
