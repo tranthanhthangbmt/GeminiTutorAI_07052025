@@ -1155,6 +1155,12 @@ if pdf_context:
 
 # Hiển thị lịch sử chat
 # Duyệt và hiển thị toàn bộ lịch sử chat
+# Tìm chỉ số cuối cùng của message AI
+last_ai_idx = max(
+    (i for i, msg in enumerate(st.session_state.messages[1:]) if msg["role"] == "model"),
+    default=-1
+)
+
 for idx, msg in enumerate(st.session_state.messages[1:]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     formatted_text = format_pdf_text_for_display(msg["parts"][0]["text"])
@@ -1162,7 +1168,17 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
 
     # 🔊 Nếu là AI và người dùng bật auto audio
     if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
-        render_audio_block(msg["parts"][0]["text"], autoplay=True)
+        is_last_ai = idx == last_ai_idx
+        render_audio_block(msg["parts"][0]["text"], autoplay=is_last_ai)
+        
+# for idx, msg in enumerate(st.session_state.messages[1:]):  
+#     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
+#     formatted_text = format_pdf_text_for_display(msg["parts"][0]["text"])
+#     st.chat_message(role).markdown(formatted_text)
+
+#     # 🔊 Nếu là AI và người dùng bật auto audio
+#     if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
+#         render_audio_block(msg["parts"][0]["text"], autoplay=True)
         
 # previous_msg = None
 
