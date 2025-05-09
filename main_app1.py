@@ -1145,12 +1145,15 @@ if pdf_context:
 
     # Reset session nếu file/tài liệu mới
     if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
-        greeting = "Mình đã sẵn sàng để bắt đầu buổi học dựa trên tài liệu bạn đã cung cấp."
-    
+        # 🔹 Greeting khởi đầu buổi học + danh sách phần học
+        greeting = "👋 Mình đã sẵn sàng để đồng hành cùng bạn trong buổi học hôm nay!\n\n"
+        
         if lesson_summary:
-            greeting += f"\n\n{lesson_summary}"
-    
-        # ➕ Gộp danh sách phần học vào greeting luôn
+            greeting += f"📘 *{lesson_summary.strip()}*\n\n"
+        
+        greeting += "🎯 Bạn muốn bắt đầu với phần nào trong bài học?\n\n"
+        
+        # 🔸 Tạo danh sách phần học cấp cao (heading_level <= 1)
         part_list = st.session_state.get("lesson_parts", [])
         part_types = {
             "ly_thuyet": "Lý thuyết",
@@ -1160,20 +1163,20 @@ if pdf_context:
             "du_an": "Bài tập dự án"
         }
         
-        # ✅ Chỉ lấy các mục lớn nhất (heading_level == 1 hoặc 0)
         numbered_parts = []
         seen_loai = set()
-        for i, part in enumerate(part_list):
+        for part in part_list:
             if part.get("heading_level", 0) <= 1:
                 loai = part.get("loai", "")
                 if loai not in seen_loai:
                     seen_loai.add(loai)
                     label = part_types.get(loai, "Phần khác")
-                    numbered_parts.append(f"{len(numbered_parts)+1}. {label} – {part.get('tieu_de', '')}")
-    
+                    numbered_parts.append(f"{len(numbered_parts)+1}. **{label}** – {part.get('tieu_de', '')}")
+        
+        # 🔸 Ghép danh sách vào greeting
         if numbered_parts:
-            greeting += "\n\nBạn muốn học phần nào trước?\n\n" + "\n".join(numbered_parts)
-            greeting += "\n\n👉 Hãy gõ số tương ứng để bắt đầu nhé."
+            greeting += "\n".join(numbered_parts)
+            greeting += "\n\n👉 Hãy *gõ số tương ứng* để bắt đầu nhé!"
     
         st.session_state.messages = [
             {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
