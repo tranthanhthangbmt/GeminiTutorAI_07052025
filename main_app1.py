@@ -1191,17 +1191,17 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     #     render_audio_block(greeting_text, autoplay=True)
 
     # ✅ Greeting ban đầu — chỉ phát audio nếu "Tự động phát âm thanh" được bật
-    if (
-        idx == 0 
-        and role == "🤖 Gia sư AI" 
-        and "enable_audio_playback" in st.session_state 
-        and st.session_state["enable_audio_playback"] is True
-    ):
-        greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
-        render_audio_block(greeting_text, autoplay=True)
-    elif role == "🤖 Gia sư AI":
-        autoplay_setting = st.session_state.get("enable_audio_playback", False)
-        render_audio_block(msg["parts"][0]["text"], autoplay=False)
+    # if (
+    #     idx == 0 
+    #     and role == "🤖 Gia sư AI" 
+    #     and "enable_audio_playback" in st.session_state 
+    #     and st.session_state["enable_audio_playback"] is True
+    # ):
+    #     greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
+    #     render_audio_block(greeting_text, autoplay=True)
+    # elif role == "🤖 Gia sư AI":
+    #     autoplay_setting = st.session_state.get("enable_audio_playback", False)
+    #     render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
     # ✅ Phát audio cho tất cả các message của Gia sư AI
     # if role == "🤖 Gia sư AI":
