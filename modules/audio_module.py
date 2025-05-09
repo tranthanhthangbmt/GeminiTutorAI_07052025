@@ -61,24 +61,54 @@ def play_audio(text, voice="vi-VN-HoaiMyNeural"):
         """
         st.markdown(js_code, unsafe_allow_html=True)
 
-
 def generate_and_encode_audio(text, voice="vi-VN-HoaiMyNeural"):
     """
     Sinh file audio từ văn bản, encode base64 để nhúng HTML
     """
+    if not text.strip():
+        st.warning("⚠️ Không có nội dung hợp lệ để phát âm.")
+        return ""
+
     async def _generate_audio(text, filename, voice):
-        communicate = edge_tts.Communicate(text, voice)
-        await communicate.save(filename)
+        try:
+            communicate = edge_tts.Communicate(text, voice)
+            await communicate.save(filename)
+        except Exception as e:
+            st.error(f"❌ Lỗi khi tạo audio: {e}")
+            return False
+        return True
 
     temp_filename = f"temp_{uuid.uuid4().hex}.mp3"
-    asyncio.run(_generate_audio(text, temp_filename, voice))
+    success = asyncio.run(_generate_audio(text, temp_filename, voice))
 
-    with open(temp_filename, "rb") as f:
-        audio_bytes = f.read()
-        b64 = base64.b64encode(audio_bytes).decode()
+    if not success or not os.path.exists(temp_filename):
+        st.error("❌ Không thể tạo file âm thanh.")
+        return ""
 
-    os.remove(temp_filename)
-    return b64
+    try:
+        with open(temp_filename, "rb") as f:
+            audio_bytes = f.read()
+            b64 = base64.b64encode(audio_bytes).decode()
+        return b64
+    finally:
+        os.remove(temp_filename)
+# def generate_and_encode_audio(text, voice="vi-VN-HoaiMyNeural"):
+#     """
+#     Sinh file audio từ văn bản, encode base64 để nhúng HTML
+#     """
+#     async def _generate_audio(text, filename, voice):
+#         communicate = edge_tts.Communicate(text, voice)
+#         await communicate.save(filename)
+
+#     temp_filename = f"temp_{uuid.uuid4().hex}.mp3"
+#     asyncio.run(_generate_audio(text, temp_filename, voice))
+
+#     with open(temp_filename, "rb") as f:
+#         audio_bytes = f.read()
+#         b64 = base64.b64encode(audio_bytes).decode()
+
+#     os.remove(temp_filename)
+#     return b64
 
 
 # Gợi ý giọng đọc tiếng Việt:
