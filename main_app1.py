@@ -545,7 +545,7 @@ with st.sidebar:
         </style>
     """, unsafe_allow_html=True)
     
-    show_content = st.sidebar.checkbox("📑 Mục lục bài học", value=True)
+    show_content = st.sidebar.checkbox("📑 Mục lục bài học", value=False)
     #doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
     # Hiển thị checkbox cho người dùng
     read_lesson_first = st.checkbox("Đọc nội dung bài học", value=False)
