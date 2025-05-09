@@ -1227,8 +1227,8 @@ if user_input:
         st.chat_message("🤖 Gia sư AI").markdown(reply)
 
         # ✅ Gọi audio ngay sau hiển thị
-        # autoplay_setting = st.session_state.get("enable_audio_playback", False)
-        # render_audio_block(reply, autoplay=autoplay_setting)
+        autoplay_setting = st.session_state.get("enable_audio_playback", False)
+        render_audio_block(reply, autoplay=autoplay_setting)
 
         # Sau đó mới append vào session_state để lưu
         st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
@@ -1262,7 +1262,7 @@ if user_input:
         st.session_state["current_part_index"] += 1
 
         # 🚀 Buộc chạy lại để message mới được render audio trong vòng for
-        st.rerun()
+        #!st.rerun()
     
         # b64 = generate_and_encode_audio(reply)
         # b64 = None
