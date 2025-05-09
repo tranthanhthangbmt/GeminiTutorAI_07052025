@@ -1176,22 +1176,24 @@ if pdf_context:
         return greeting.strip()
         
     # Reset session nếu file/tài liệu mới
-    if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
-        # 🔹 Greeting khởi đầu buổi học + danh sách phần học
-        greeting = build_lesson_intro(lesson_summary, st.session_state.get("lesson_parts", []))
-        
     # if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
-    #     greeting = "Mình đã sẵn sàng để bắt đầu buổi học dựa trên tài liệu bạn đã cung cấp."
-    #     if lesson_summary:
-    #         greeting += f"\n\n{lesson_summary}"
-    #     greeting += "\n\nBạn đã sẵn sàng chưa?"
+    #     # 🔹 Greeting khởi đầu buổi học + danh sách phần học
+    #     greeting = build_lesson_intro(lesson_summary, st.session_state.get("lesson_parts", []))
+        
+    if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
+        greeting = "Mình đã sẵn sàng để bắt đầu buổi học dựa trên tài liệu bạn đã cung cấp."
+        if lesson_summary:
+            greeting += f"\n\n{lesson_summary}"
+        
+            greeting = build_lesson_intro(lesson_summary, st.session_state.get("lesson_parts", []))
+        #greeting += "\n\nBạn đã sẵn sàng chưa?"
 
-    #     st.session_state.messages = [
-    #         {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
-    #         {"role": "model", "parts": [{"text": greeting}]}
-    #     ]
-    #     st.session_state.lesson_source = current_source
-    #     st.session_state.lesson_loaded = current_source  # đánh dấu đã load
+        st.session_state.messages = [
+            {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
+            {"role": "model", "parts": [{"text": greeting}]}
+        ]
+        st.session_state.lesson_source = current_source
+        st.session_state.lesson_loaded = current_source  # đánh dấu đã load
         
     #Phần chọn bài học
     lesson_title = selected_lesson if selected_lesson != "👉 Chọn bài học..." else "Bài học tùy chỉnh"
