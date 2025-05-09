@@ -458,7 +458,7 @@ with st.sidebar:
     """)
     "[Lấy API key tại đây](https://aistudio.google.com/app/apikey)"
     # 🔊 Cho phép bật/tắt tự động phát audio
-    enable_audio_default = False  # ✅ Mặc định: Bật nghe audio
+    enable_audio_default = True  # ✅ Mặc định: Bật nghe audio
     #st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
     #Đảm bảo không gán enable_audio_playback mặc định mỗi lần, mà chỉ gán nếu chưa tồn tại:
     if "enable_audio_playback" not in st.session_state:
