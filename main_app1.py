@@ -1159,11 +1159,17 @@ if pdf_context:
             "luyen_tap": "Bài tập luyện tập",
             "du_an": "Bài tập dự án"
         }
-    
+        
+        # ✅ Chỉ lấy các mục lớn nhất (heading_level == 1 hoặc 0)
         numbered_parts = []
+        seen_loai = set()
         for i, part in enumerate(part_list):
-            label = part_types.get(part["loai"], "Phần khác")
-            numbered_parts.append(f"{i+1}. {label} – {part['tieu_de']}")
+            if part.get("heading_level", 0) <= 1:
+                loai = part.get("loai", "")
+                if loai not in seen_loai:
+                    seen_loai.add(loai)
+                    label = part_types.get(loai, "Phần khác")
+                    numbered_parts.append(f"{len(numbered_parts)+1}. {label} – {part.get('tieu_de', '')}")
     
         if numbered_parts:
             greeting += "\n\nBạn muốn học phần nào trước?\n\n" + "\n".join(numbered_parts)
