@@ -1179,10 +1179,10 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     st.chat_message(role).markdown(formatted_text)
 
     # ✅ Greeting ban đầu — ưu tiên dùng audio có sẵn nếu có
-     if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
-         greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
-         if st.session_state.get("enable_audio_playback", False) is True:
-             render_audio_block(greeting_text, autoplay=True)
+    if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
+        greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
+        if st.session_state.get("enable_audio_playback", False) is True:
+            render_audio_block(greeting_text, autoplay=True)
     # if (
     #     idx == 0
     #     and role == "🤖 Gia sư AI"
