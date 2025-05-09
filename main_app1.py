@@ -1171,7 +1171,7 @@ if pdf_context:
     
         if numbered_parts:
             greeting += "\n".join(numbered_parts)
-            greeting += "\n\n *Gõ số tương ứng* để bắt đầu nhé!"
+            greeting += "\n\n Bạn muốn bắt đầu phần nào trước?"
     
         return greeting.strip()
         
