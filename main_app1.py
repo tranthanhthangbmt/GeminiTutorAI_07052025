@@ -459,7 +459,16 @@ with st.sidebar:
     "[Lấy API key tại đây](https://aistudio.google.com/app/apikey)"
     # 🔊 Cho phép bật/tắt tự động phát audio
     enable_audio_default = False  # ✅ Mặc định: Bật nghe audio
-    st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
+    #st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
+    #Đảm bảo không gán enable_audio_playback mặc định mỗi lần, mà chỉ gán nếu chưa tồn tại:
+    if "enable_audio_playback" not in st.session_state:
+        st.session_state["enable_audio_playback"] = False  # hoặc True tùy bạn
+
+    st.session_state["enable_audio_playback"] = st.sidebar.checkbox(
+        "🔊 Tự động phát âm thanh", 
+        value=st.session_state["enable_audio_playback"]
+    )
+
     if st.session_state.get("show_sidebar_inputs", False):
         st.markdown("📚 **Chọn bài học hoặc tải lên bài học**")
         
@@ -1170,7 +1179,14 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     st.chat_message(role).markdown(formatted_text)
 
     # ✅ Greeting ban đầu — ưu tiên dùng audio có sẵn nếu có
-    if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
+    # if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
+    #     greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
+    #     render_audio_block(greeting_text, autoplay=True)
+    if (
+        idx == 0
+        and role == "🤖 Gia sư AI"
+        and st.session_state.get("enable_audio_playback", False)
+    ):
         greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
         render_audio_block(greeting_text, autoplay=True)
     elif role == "🤖 Gia sư AI":
