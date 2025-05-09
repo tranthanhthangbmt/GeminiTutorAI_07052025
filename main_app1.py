@@ -79,76 +79,16 @@ from modules.audio_module import (
     play_audio,
     generate_and_encode_audio
 )
-
-# Chèn đoạn JavaScript kiểm soát tất cả audio
-st.markdown("""
-<script>
-(function() {
-    function stopAllOtherAudio(currentAudio) {
-        const all = document.querySelectorAll("audio");
-        all.forEach(audio => {
-            if (audio !== currentAudio) {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        });
-    }
-
-    function attachHandler(audio) {
-        if (!audio.dataset.bound) {
-            audio.addEventListener("play", function () {
-                stopAllOtherAudio(audio);
-            });
-            audio.dataset.bound = "true";  // tránh gán trùng
-        }
-    }
-
-    // Theo dõi mọi audio được thêm vào DOM
-    const observer = new MutationObserver(() => {
-        document.querySelectorAll("audio").forEach(attachHandler);
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-})();
-</script>
-""", unsafe_allow_html=True)
-
-def render_audio_block(text: str, autoplay=True):
+    
+def render_audio_block(text: str, autoplay=False):
     b64 = generate_and_encode_audio(text)
     autoplay_attr = "autoplay" if autoplay else ""
-    unique_id = f"audio_{uuid.uuid4().hex}"
-
     st.markdown(f"""
-    <audio id="{unique_id}" controls {autoplay_attr}>
+    <audio controls {autoplay_attr}>
         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
         Trình duyệt của bạn không hỗ trợ phát âm thanh.
     </audio>
-    <script>
-        setTimeout(function() {{
-            const thisAudio = document.getElementById("{unique_id}");
-            if (!thisAudio) return;
-            thisAudio.onplay = function() {{
-                const audios = document.querySelectorAll("audio");
-                audios.forEach(function(audio) {{
-                    if (audio !== thisAudio) {{
-                        audio.pause();
-                        audio.currentTime = 0;
-                    }}
-                }});
-            }};
-        }}, 100);
-    </script>
     """, unsafe_allow_html=True)
-    
-# def render_audio_block(text: str, autoplay=True):
-#     b64 = generate_and_encode_audio(text)
-#     autoplay_attr = "autoplay" if autoplay else ""
-#     st.markdown(f"""
-#     <audio controls {autoplay_attr}>
-#         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-#         Trình duyệt của bạn không hỗ trợ phát âm thanh.
-#     </audio>
-#     """, unsafe_allow_html=True)
     
 
 from modules.firestore_logger import (
@@ -1232,7 +1172,7 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     # ✅ Phát audio cho tất cả các message của Gia sư AI
     if role == "🤖 Gia sư AI":
         autoplay_setting = st.session_state.get("enable_audio_playback", False)
-        render_audio_block(msg["parts"][0]["text"], autoplay=autoplay_setting)
+        render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
 # Ô nhập câu hỏi mới
 user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
@@ -1288,7 +1228,7 @@ if user_input:
 
         # ✅ Gọi audio ngay sau hiển thị
         autoplay_setting = st.session_state.get("enable_audio_playback", False)
-        render_audio_block(reply, autoplay=autoplay_setting)
+        render_audio_block(reply, autoplay=False)
 
         # Sau đó mới append vào session_state để lưu
         st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
