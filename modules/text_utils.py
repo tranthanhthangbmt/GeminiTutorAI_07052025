@@ -7,8 +7,10 @@ def clean_html_to_text(text):
     """
     Xóa HTML tags và trả về văn bản thuần túy.
     """
+    if not isinstance(text, str):
+        text = str(text) if text is not None else ""
     soup = BeautifulSoup(text, "html.parser")
-    return soup.get_text()
+    return soup.get_text(separator=' ', strip=True)
 
 def format_mcq_options(text):
     """
