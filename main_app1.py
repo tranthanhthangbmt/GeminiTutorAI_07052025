@@ -1144,12 +1144,12 @@ if pdf_context:
     """
 
     def build_lesson_intro(lesson_summary: str, part_list: list) -> str:
-        greeting = "👋 Chào bạn! Mình đã sẵn sàng để đồng hành cùng bạn trong buổi học hôm nay.\n\n"
+        greeting = "Chào bạn! Mình đã sẵn sàng để đồng hành cùng bạn trong buổi học hôm nay.\n\n"
     
         if lesson_summary:
-            greeting += f"📘 *{lesson_summary.strip()}*\n\n"
+            greeting += f" *{lesson_summary.strip()}*\n\n"
     
-        greeting += "🎯 Bạn muốn bắt đầu với phần nào:\n\n"
+        greeting += " Bạn muốn bắt đầu với phần nào:\n\n"
     
         part_types = {
             "ly_thuyet": "Lý thuyết",
@@ -1171,7 +1171,7 @@ if pdf_context:
     
         if numbered_parts:
             greeting += "\n".join(numbered_parts)
-            greeting += "\n\n👉 *Gõ số tương ứng* để bắt đầu nhé!"
+            greeting += "\n\n *Gõ số tương ứng* để bắt đầu nhé!"
     
         return greeting.strip()
         
@@ -1196,7 +1196,7 @@ if pdf_context:
         st.session_state.lesson_loaded = current_source  # đánh dấu đã load
         
     #Phần chọn bài học
-    lesson_title = selected_lesson if selected_lesson != "👉 Chọn bài học..." else "Bài học tùy chỉnh"
+    lesson_title = selected_lesson if selected_lesson != " Chọn bài học..." else "Bài học tùy chỉnh"
 
     PROMPT_LESSON_CONTEXT = f"""
     {SYSTEM_PROMPT_Tutor_AI}
