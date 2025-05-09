@@ -83,12 +83,42 @@ from modules.audio_module import (
 def render_audio_block(text: str, autoplay=True):
     b64 = generate_and_encode_audio(text)
     autoplay_attr = "autoplay" if autoplay else ""
+    unique_id = f"audio_{uuid.uuid4().hex}"
+
     st.markdown(f"""
-    <audio controls {autoplay_attr}>
+    <script>
+        // Khi audio này bắt đầu phát
+        document.addEventListener("DOMContentLoaded", function() {{
+            const currentAudio = document.getElementById("{unique_id}");
+            if (currentAudio) {{
+                currentAudio.addEventListener("play", function () {{
+                    // Dừng tất cả audio khác
+                    document.querySelectorAll("audio").forEach(function(audio) {{
+                        if (audio !== currentAudio) {{
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }}
+                    }});
+                }});
+            }}
+        }});
+    </script>
+
+    <audio id="{unique_id}" controls {autoplay_attr}>
         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
         Trình duyệt của bạn không hỗ trợ phát âm thanh.
     </audio>
     """, unsafe_allow_html=True)
+    
+# def render_audio_block(text: str, autoplay=True):
+#     b64 = generate_and_encode_audio(text)
+#     autoplay_attr = "autoplay" if autoplay else ""
+#     st.markdown(f"""
+#     <audio controls {autoplay_attr}>
+#         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+#         Trình duyệt của bạn không hỗ trợ phát âm thanh.
+#     </audio>
+#     """, unsafe_allow_html=True)
     
 
 from modules.firestore_logger import (
