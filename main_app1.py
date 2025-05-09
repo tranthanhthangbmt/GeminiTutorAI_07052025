@@ -1174,12 +1174,12 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
         greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
         render_audio_block(greeting_text, autoplay=True)
     elif role == "🤖 Gia sư AI":
-        autoplay_setting = st.session_state.get("enable_audio_playback", False)
+        autoplay_setting = st.session_state.get("enable_audio_playback", True)
         render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
     # ✅ Phát audio cho tất cả các message của Gia sư AI
     # if role == "🤖 Gia sư AI":
-    #     autoplay_setting = st.session_state.get("enable_audio_playback", False)
+    #     autoplay_setting = st.session_state.get("enable_audio_playback", True)
     #     render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
 # Ô nhập câu hỏi mới
@@ -1235,7 +1235,7 @@ if user_input:
         st.chat_message("🤖 Gia sư AI").markdown(reply)
 
         # ✅ Gọi audio ngay sau hiển thị
-        autoplay_setting = st.session_state.get("enable_audio_playback", False)
+        autoplay_setting = st.session_state.get("enable_audio_playback", True)
         render_audio_block(reply, autoplay=True)
 
         # Sau đó mới append vào session_state để lưu
