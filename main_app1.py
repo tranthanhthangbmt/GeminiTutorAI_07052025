@@ -462,7 +462,7 @@ with st.sidebar:
     #st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
     #Đảm bảo không gán enable_audio_playback mặc định mỗi lần, mà chỉ gán nếu chưa tồn tại:
     if "enable_audio_playback" not in st.session_state:
-        st.session_state["enable_audio_playback"] = False  # hoặc True tùy bạn
+        st.session_state["enable_audio_playback"] = True  # hoặc True tùy bạn
 
     st.session_state["enable_audio_playback"] = st.sidebar.checkbox(
         "🔊 Tự động phát âm thanh", 
