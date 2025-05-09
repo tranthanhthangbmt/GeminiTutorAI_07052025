@@ -116,11 +116,28 @@ st.markdown("""
 def render_audio_block(text: str, autoplay=True):
     b64 = generate_and_encode_audio(text)
     autoplay_attr = "autoplay" if autoplay else ""
+    unique_id = f"audio_{uuid.uuid4().hex}"
+
     st.markdown(f"""
-    <audio controls {autoplay_attr}>
+    <audio id="{unique_id}" controls {autoplay_attr}>
         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
         Trình duyệt của bạn không hỗ trợ phát âm thanh.
     </audio>
+    <script>
+        setTimeout(function() {{
+            const thisAudio = document.getElementById("{unique_id}");
+            if (!thisAudio) return;
+            thisAudio.onplay = function() {{
+                const audios = document.querySelectorAll("audio");
+                audios.forEach(function(audio) {{
+                    if (audio !== thisAudio) {{
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }}
+                }});
+            }};
+        }}, 100);
+    </script>
     """, unsafe_allow_html=True)
     
 # def render_audio_block(text: str, autoplay=True):
