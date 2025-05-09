@@ -1226,6 +1226,13 @@ if user_input:
         # 3. Hiển thị phản hồi
         st.chat_message("🤖 Gia sư AI").markdown(reply)
 
+        # ✅ Gọi audio ngay sau hiển thị
+        autoplay_setting = st.session_state.get("enable_audio_playback", False)
+        render_audio_block(reply, autoplay=autoplay_setting)
+
+        # Sau đó mới append vào session_state để lưu
+        #st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
+
   		# 🚀 TỰ ĐỘNG CHẤM ĐIỂM
         scoring_prompt = f"""
 	    Chấm điểm câu trả lời sau trên thang điểm 0–100, chỉ trả về số, không giải thích.
