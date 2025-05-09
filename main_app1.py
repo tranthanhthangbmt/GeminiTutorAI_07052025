@@ -86,13 +86,16 @@ def render_audio_block(text: str, autoplay=True):
     unique_id = f"audio_{uuid.uuid4().hex}"
 
     st.markdown(f"""
+    <audio id="{unique_id}" controls {autoplay_attr}>
+        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+        Trình duyệt của bạn không hỗ trợ phát âm thanh.
+    </audio>
+
     <script>
-        // Khi audio này bắt đầu phát
-        document.addEventListener("DOMContentLoaded", function() {{
+        setTimeout(function() {{
             const currentAudio = document.getElementById("{unique_id}");
             if (currentAudio) {{
                 currentAudio.addEventListener("play", function () {{
-                    // Dừng tất cả audio khác
                     document.querySelectorAll("audio").forEach(function(audio) {{
                         if (audio !== currentAudio) {{
                             audio.pause();
@@ -101,13 +104,8 @@ def render_audio_block(text: str, autoplay=True):
                     }});
                 }});
             }}
-        }});
+        }}, 0);
     </script>
-
-    <audio id="{unique_id}" controls {autoplay_attr}>
-        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-        Trình duyệt của bạn không hỗ trợ phát âm thanh.
-    </audio>
     """, unsafe_allow_html=True)
     
 # def render_audio_block(text: str, autoplay=True):
