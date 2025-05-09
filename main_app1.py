@@ -1146,16 +1146,48 @@ if pdf_context:
     # Reset session nếu file/tài liệu mới
     if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
         greeting = "Mình đã sẵn sàng để bắt đầu buổi học dựa trên tài liệu bạn đã cung cấp."
+    
         if lesson_summary:
             greeting += f"\n\n{lesson_summary}"
-        greeting += "\n\nBạn đã sẵn sàng chưa?"
-
+    
+        # ➕ Gộp danh sách phần học vào greeting luôn
+        part_list = st.session_state.get("lesson_parts", [])
+        part_types = {
+            "ly_thuyet": "Lý thuyết",
+            "bai_tap_co_giai": "Bài tập có lời giải",
+            "trac_nghiem": "Trắc nghiệm",
+            "luyen_tap": "Bài tập luyện tập",
+            "du_an": "Bài tập dự án"
+        }
+    
+        numbered_parts = []
+        for i, part in enumerate(part_list):
+            label = part_types.get(part["loai"], "Phần khác")
+            numbered_parts.append(f"{i+1}. {label} – {part['tieu_de']}")
+    
+        if numbered_parts:
+            greeting += "\n\nBạn muốn học phần nào trước?\n\n" + "\n".join(numbered_parts)
+            greeting += "\n\n👉 Hãy gõ số tương ứng để bắt đầu nhé."
+    
         st.session_state.messages = [
             {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
             {"role": "model", "parts": [{"text": greeting}]}
         ]
         st.session_state.lesson_source = current_source
-        st.session_state.lesson_loaded = current_source  # đánh dấu đã load
+        st.session_state.lesson_loaded = current_source
+        
+    # if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
+    #     greeting = "Mình đã sẵn sàng để bắt đầu buổi học dựa trên tài liệu bạn đã cung cấp."
+    #     if lesson_summary:
+    #         greeting += f"\n\n{lesson_summary}"
+    #     greeting += "\n\nBạn đã sẵn sàng chưa?"
+
+    #     st.session_state.messages = [
+    #         {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
+    #         {"role": "model", "parts": [{"text": greeting}]}
+    #     ]
+    #     st.session_state.lesson_source = current_source
+    #     st.session_state.lesson_loaded = current_source  # đánh dấu đã load
         
     #Phần chọn bài học
     lesson_title = selected_lesson if selected_lesson != "👉 Chọn bài học..." else "Bài học tùy chỉnh"
