@@ -1170,11 +1170,11 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     st.chat_message(role).markdown(formatted_text)
 
     # ✅ Greeting ban đầu — ưu tiên dùng audio có sẵn nếu có
-    if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+    if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
         greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
         render_audio_block(greeting_text, autoplay=True)
     elif role == "🤖 Gia sư AI":
-        autoplay_setting = st.session_state.get("enable_audio_playback", True)
+        autoplay_setting = st.session_state.get("enable_audio_playback", False)
         render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
     # ✅ Phát audio cho tất cả các message của Gia sư AI
@@ -1235,8 +1235,10 @@ if user_input:
         st.chat_message("🤖 Gia sư AI").markdown(reply)
 
         # ✅ Gọi audio ngay sau hiển thị
-        autoplay_setting = st.session_state.get("enable_audio_playback", True)
-        render_audio_block(reply, autoplay=True)
+        # autoplay_setting = st.session_state.get("enable_audio_playback", True)
+        # render_audio_block(reply, autoplay=True)
+        if st.session_state.get("enable_audio_playback", False):
+            render_audio_block(reply, autoplay=True)
 
         # Sau đó mới append vào session_state để lưu
         st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
