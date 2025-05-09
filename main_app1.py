@@ -1143,18 +1143,14 @@ if pdf_context:
     --- END OF HANDBOOK CONTENT ---
     """
 
-    # Reset session nếu file/tài liệu mới
-    if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
-        # 🔹 Greeting khởi đầu buổi học + danh sách phần học
-        greeting = "👋 Mình đã sẵn sàng để đồng hành cùng bạn trong buổi học hôm nay!\n\n"
-        
+    def build_lesson_intro(lesson_summary: str, part_list: list) -> str:
+        greeting = "👋 Chào bạn! Mình đã sẵn sàng để đồng hành cùng bạn trong buổi học hôm nay.\n\n"
+    
         if lesson_summary:
             greeting += f"📘 *{lesson_summary.strip()}*\n\n"
-        
-        greeting += "🎯 Bạn muốn bắt đầu với phần nào trong bài học?\n\n"
-        
-        # 🔸 Tạo danh sách phần học cấp cao (heading_level <= 1)
-        part_list = st.session_state.get("lesson_parts", [])
+    
+        greeting += "🎯 Bạn muốn bắt đầu với phần nào:\n\n"
+    
         part_types = {
             "ly_thuyet": "Lý thuyết",
             "bai_tap_co_giai": "Bài tập có lời giải",
@@ -1162,28 +1158,27 @@ if pdf_context:
             "luyen_tap": "Bài tập luyện tập",
             "du_an": "Bài tập dự án"
         }
-        
-        numbered_parts = []
+    
         seen_loai = set()
+        numbered_parts = []
+    
         for part in part_list:
-            if part.get("heading_level", 0) <= 1:
-                loai = part.get("loai", "")
-                if loai not in seen_loai:
-                    seen_loai.add(loai)
-                    label = part_types.get(loai, "Phần khác")
-                    numbered_parts.append(f"{len(numbered_parts)+1}. **{label}** – {part.get('tieu_de', '')}")
-        
-        # 🔸 Ghép danh sách vào greeting
+            loai = part.get("loai", "")
+            if loai and loai not in seen_loai:
+                seen_loai.add(loai)
+                label = part_types.get(loai, "Phần khác")
+                numbered_parts.append(f"{len(numbered_parts)+1}. **{label}**")
+    
         if numbered_parts:
             greeting += "\n".join(numbered_parts)
-            greeting += "\n\n👉 Hãy *gõ số tương ứng* để bắt đầu nhé!"
+            greeting += "\n\n👉 *Gõ số tương ứng* để bắt đầu nhé!"
     
-        st.session_state.messages = [
-            {"role": "user", "parts": [{"text": PROMPT_LESSON_CONTEXT}]},
-            {"role": "model", "parts": [{"text": greeting}]}
-        ]
-        st.session_state.lesson_source = current_source
-        st.session_state.lesson_loaded = current_source
+        return greeting.strip()
+        
+    # Reset session nếu file/tài liệu mới
+    if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
+        # 🔹 Greeting khởi đầu buổi học + danh sách phần học
+        greeting = build_lesson_intro(lesson_summary, st.session_state.get("lesson_parts", []))
         
     # if "lesson_source" not in st.session_state or st.session_state.lesson_source != current_source:
     #     greeting = "Mình đã sẵn sàng để bắt đầu buổi học dựa trên tài liệu bạn đã cung cấp."
