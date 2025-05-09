@@ -80,32 +80,47 @@ from modules.audio_module import (
     generate_and_encode_audio
 )
 
+# Chèn đoạn JavaScript kiểm soát tất cả audio
+st.markdown("""
+<script>
+(function() {
+    function stopAllOtherAudio(currentAudio) {
+        const all = document.querySelectorAll("audio");
+        all.forEach(audio => {
+            if (audio !== currentAudio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        });
+    }
+
+    function attachHandler(audio) {
+        if (!audio.dataset.bound) {
+            audio.addEventListener("play", function () {
+                stopAllOtherAudio(audio);
+            });
+            audio.dataset.bound = "true";  // tránh gán trùng
+        }
+    }
+
+    // Theo dõi mọi audio được thêm vào DOM
+    const observer = new MutationObserver(() => {
+        document.querySelectorAll("audio").forEach(attachHandler);
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+""", unsafe_allow_html=True)
+
 def render_audio_block(text: str, autoplay=True):
     b64 = generate_and_encode_audio(text)
     autoplay_attr = "autoplay" if autoplay else ""
-    unique_id = f"audio_{uuid.uuid4().hex}"
-
     st.markdown(f"""
-    <audio id="{unique_id}" controls {autoplay_attr}>
+    <audio controls {autoplay_attr}>
         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
         Trình duyệt của bạn không hỗ trợ phát âm thanh.
     </audio>
-
-    <script>
-        setTimeout(function() {{
-            const currentAudio = document.getElementById("{unique_id}");
-            if (currentAudio) {{
-                currentAudio.addEventListener("play", function () {{
-                    document.querySelectorAll("audio").forEach(function(audio) {{
-                        if (audio !== currentAudio) {{
-                            audio.pause();
-                            audio.currentTime = 0;
-                        }}
-                    }});
-                }});
-            }}
-        }}, 0);
-    </script>
     """, unsafe_allow_html=True)
     
 # def render_audio_block(text: str, autoplay=True):
