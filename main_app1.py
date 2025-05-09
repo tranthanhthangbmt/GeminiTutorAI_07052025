@@ -1260,6 +1260,9 @@ if user_input:
 
         #Khi học sinh trả lời xong → chấm điểm → cập nhật tiến độ cho
         st.session_state["current_part_index"] += 1
+
+        # 🚀 Buộc chạy lại để message mới được render audio trong vòng for
+        st.rerun()
     
         # b64 = generate_and_encode_audio(reply)
         # b64 = None
