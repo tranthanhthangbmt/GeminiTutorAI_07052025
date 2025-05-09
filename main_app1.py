@@ -1182,10 +1182,20 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     # if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", False):
     #     greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
     #     render_audio_block(greeting_text, autoplay=True)
+    # if (
+    #     idx == 0
+    #     and role == "🤖 Gia sư AI"
+    #     and st.session_state.get("enable_audio_playback", False)
+    # ):
+    #     greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
+    #     render_audio_block(greeting_text, autoplay=True)
+
+    # ✅ Greeting ban đầu — chỉ phát audio nếu "Tự động phát âm thanh" được bật
     if (
-        idx == 0
-        and role == "🤖 Gia sư AI"
-        and st.session_state.get("enable_audio_playback", False)
+        idx == 0 
+        and role == "🤖 Gia sư AI" 
+        and "enable_audio_playback" in st.session_state 
+        and st.session_state["enable_audio_playback"] is True
     ):
         greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
         render_audio_block(greeting_text, autoplay=True)
