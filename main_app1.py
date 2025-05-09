@@ -1120,7 +1120,7 @@ if pdf_context:
         lesson_summary = ""
 
     # Giới hạn dung lượng tài liệu đưa vào prompt khởi tạo
-    LIMITED_PDF_CONTEXT = pdf_context[:4000]  # hoặc dùng tokenizer nếu muốn chính xác hơn
+    LIMITED_PDF_CONTEXT = pdf_context #[:4000]  # hoặc dùng tokenizer nếu muốn chính xác hơn
     
     PROMPT_LESSON_CONTEXT = f"""
     {SYSTEM_PROMPT_Tutor_AI}
