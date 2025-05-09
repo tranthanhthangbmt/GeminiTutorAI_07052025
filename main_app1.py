@@ -458,7 +458,7 @@ with st.sidebar:
     """)
     "[Lấy API key tại đây](https://aistudio.google.com/app/apikey)"
     # 🔊 Cho phép bật/tắt tự động phát audio
-    enable_audio_default = False  # ✅ Mặc định: Bật nghe audio
+    enable_audio_default = True  # ✅ Mặc định: Bật nghe audio
     st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
     if st.session_state.get("show_sidebar_inputs", False):
         st.markdown("📚 **Chọn bài học hoặc tải lên bài học**")
@@ -1182,14 +1182,23 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
         greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
         render_audio_block(greeting_text, autoplay=True)
 
+    # # ✅ Nếu là Gia sư AI và bật audio
+    # if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+    #     if is_last and previous_msg:
+    #         # 👉 Ghép phát message trước nếu là cuối
+    #         render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
+    #     elif st.session_state.get("read_lesson_first", False):
+    #         # 👉 Phát các đoạn AI ở giữa nếu bật đọc bài học
+    #         render_audio_block(msg["parts"][0]["text"], autoplay=True)
+
     # ✅ Nếu là Gia sư AI và bật audio
     if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-        if is_last and previous_msg:
-            # 👉 Ghép phát message trước nếu là cuối
-            render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
-        elif st.session_state.get("read_lesson_first", False):
-            # 👉 Phát các đoạn AI ở giữa nếu bật đọc bài học
-            render_audio_block(msg["parts"][0]["text"], autoplay=True)
+        # if is_last and previous_msg:
+        #     # 👉 Ghép phát message trước nếu là cuối
+        #     render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
+        # elif st.session_state.get("read_lesson_first", False):
+        # 👉 Phát các đoạn AI ở giữa nếu bật đọc bài học
+        render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
     previous_msg = msg
 
@@ -1270,10 +1279,11 @@ if user_input:
             diem_so=diem_so
         )
         
-        #b64 = generate_and_encode_audio(reply)
+        # b64 = generate_and_encode_audio(reply)
         # b64 = None
         # if st.session_state.get("enable_audio_playback", True):
         #     b64 = generate_and_encode_audio(reply)
+        #     render_audio_block(reply, autoplay=True)
         
         # # Hiển thị nút nghe
         # if b64:
