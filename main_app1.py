@@ -1227,11 +1227,11 @@ if user_input:
         st.chat_message("🤖 Gia sư AI").markdown(reply)
 
         # ✅ Gọi audio ngay sau hiển thị
-        autoplay_setting = st.session_state.get("enable_audio_playback", False)
-        render_audio_block(reply, autoplay=autoplay_setting)
+        # autoplay_setting = st.session_state.get("enable_audio_playback", False)
+        # render_audio_block(reply, autoplay=autoplay_setting)
 
         # Sau đó mới append vào session_state để lưu
-        #st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
+        st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
 
   		# 🚀 TỰ ĐỘNG CHẤM ĐIỂM
         scoring_prompt = f"""
@@ -1257,7 +1257,10 @@ if user_input:
             trang_thai="hoan_thanh",
             diem_so=diem_so
         )
-        
+
+        #Khi học sinh trả lời xong → chấm điểm → cập nhật tiến độ cho
+        st.session_state["current_part_index"] += 1
+    
         # b64 = generate_and_encode_audio(reply)
         # b64 = None
         # if st.session_state.get("enable_audio_playback", True):
@@ -1283,7 +1286,7 @@ if user_input:
     #st.chat_message("🤖 Gia sư AI").markdown(reply)
 
     # Lưu lại phản hồi gốc
-    st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
+    #st.session_state.messages.append({"role": "model", "parts": [{"text": reply}]})
 
     #Khi học sinh trả lời xong → chấm điểm → cập nhật tiến độ cho
-    st.session_state["current_part_index"] += 1
+    # st.session_state["current_part_index"] += 1
