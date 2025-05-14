@@ -713,7 +713,7 @@ with st.sidebar:
     if "export_requested" not in st.session_state:
         st.session_state.export_requested = False
     
-    with st.expander("📥 Kết thúc buổi học"):
+    with st.expander("📥 Kết xuất nội dung học"):
         if st.session_state.get("messages"):
             output_text = ""
             for msg in st.session_state.messages[1:]:  # Bỏ prompt hệ thống
