@@ -708,66 +708,77 @@ with st.sidebar:
         if "lesson_loaded" in st.session_state:
             del st.session_state.lesson_loaded
         st.rerun()
+
+    # Khởi tạo biến trạng thái nếu chưa có
+    if "export_requested" not in st.session_state:
+        st.session_state.export_requested = False
     
+    # Giao diện người dùng: nhấn nút trong expander
     with st.expander("📥 Kết thúc buổi học"):
         if st.button("✅ Kết xuất nội dung buổi học thành file .txt và PDF"):
-            if st.session_state.get("messages"):
-                output_text = ""
-                for msg in st.session_state.messages[1:]:  # bỏ prompt hệ thống
-                    role = "Học sinh" if msg["role"] == "user" else "Gia sư AI"
-                    text = msg["parts"][0]["text"]
-                    output_text += f"\n[{role}]:\n{text}\n\n"
-        
-                # ✅ File name base
-                lesson_title_safe = st.session_state.get("lesson_source", "BaiHoc_AITutor")
-                lesson_title_safe = lesson_title_safe.replace("upload::", "").replace("lesson::", "").replace(" ", "_").replace(":", "")
-                txt_file_name = f"BuoiHoc_{lesson_title_safe}.txt"
-                pdf_file_name = f"BuoiHoc_{lesson_title_safe}.pdf"
-        
-                # ✅ Nút tải .txt
+            st.session_state.export_requested = True  # Đánh dấu yêu cầu export
+    
+    # Xử lý kết xuất sau khi rerun
+    if st.session_state.export_requested:
+        st.session_state.export_requested = False  # Reset cờ sau khi xử lý
+    
+        if st.session_state.get("messages"):
+            output_text = ""
+            for msg in st.session_state.messages[1:]:  # Bỏ prompt hệ thống
+                role = "Học sinh" if msg["role"] == "user" else "Gia sư AI"
+                text = msg["parts"][0]["text"]
+                output_text += f"\n[{role}]:\n{text}\n\n"
+    
+            # Ghi tên file
+            lesson_title_safe = st.session_state.get("lesson_source", "BaiHoc_AITutor")
+            lesson_title_safe = lesson_title_safe.replace("upload::", "").replace("lesson::", "").replace(" ", "_").replace(":", "")
+            txt_file_name = f"BuoiHoc_{lesson_title_safe}.txt"
+            pdf_file_name = f"BuoiHoc_{lesson_title_safe}.pdf"
+    
+            # Nút tải file .txt
+            st.download_button(
+                label="📄 Tải file .txt",
+                data=output_text,
+                file_name=txt_file_name,
+                mime="text/plain"
+            )
+    
+            # Đăng ký font hỗ trợ Unicode
+            pdfmetrics.registerFont(TTFont("DejaVu", "Data/fonts/DejaVuSans.ttf"))
+    
+            # ✅ Tạo file PDF tạm
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
+                c = canvas.Canvas(tmp_pdf.name, pagesize=letter)
+                c.setFont("DejaVu", 12)  # dùng font Unicode
+    
+                width, height = letter
+                margin = 50
+                y = height - margin
+                lines = output_text.split("\n")
+    
+                for line in lines:
+                    line = line.strip()
+                    if y < margin:
+                        c.showPage()
+                        c.setFont("DejaVu", 12)
+                        y = height - margin
+                    c.drawString(margin, y, line)
+                    y -= 16
+    
+                c.save()
+    
+                # Đọc lại file để tải về
+                with open(tmp_pdf.name, "rb") as f:
+                    pdf_bytes = f.read()
+    
                 st.download_button(
-                    label="📄 Tải file .txt",
-                    data=output_text,
-                    file_name=txt_file_name,
-                    mime="text/plain"
+                    label="📕 Tải file .pdf",
+                    data=pdf_bytes,
+                    file_name=pdf_file_name,
+                    mime="application/pdf"
                 )
-
-                # Đăng ký font hỗ trợ Unicode
-                pdfmetrics.registerFont(TTFont("DejaVu", "Data/fonts/DejaVuSans.ttf"))
-        
-                # ✅ Tạo file PDF tạm
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
-                    c = canvas.Canvas(tmp_pdf.name, pagesize=letter)
-                    c.setFont("DejaVu", 12)  # dùng font Unicode
-                
-                    width, height = letter
-                    margin = 50
-                    y = height - margin
-                    lines = output_text.split("\n")
-                
-                    for line in lines:
-                        line = line.strip()
-                        if y < margin:
-                            c.showPage()
-                            c.setFont("DejaVu", 12)
-                            y = height - margin
-                        c.drawString(margin, y, line)
-                        y -= 16
-                
-                    c.save()
-        
-                    # Đọc lại file để tải về
-                    with open(tmp_pdf.name, "rb") as f:
-                        pdf_bytes = f.read()
-        
-                    st.download_button(
-                        label="📕 Tải file .pdf",
-                        data=pdf_bytes,
-                        file_name=pdf_file_name,
-                        mime="application/pdf"
-                    )
-            else:
-                st.warning("⚠️ Chưa có nội dung để kết xuất.")
+        else:
+            st.warning("⚠️ Chưa có nội dung để kết xuất.")
     
 st.title("🎓 Tutor AI")
 
