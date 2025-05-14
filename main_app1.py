@@ -713,15 +713,7 @@ with st.sidebar:
     if "export_requested" not in st.session_state:
         st.session_state.export_requested = False
     
-    # Giao diện người dùng: nhấn nút trong expander
     with st.expander("📥 Kết thúc buổi học"):
-        if st.button("✅ Kết xuất nội dung buổi học thành file .txt và PDF"):
-            st.session_state.export_requested = True  # Đánh dấu yêu cầu export
-    
-    # Xử lý kết xuất sau khi rerun
-    if st.session_state.export_requested:
-        st.session_state.export_requested = False  # Reset cờ sau khi xử lý
-    
         if st.session_state.get("messages"):
             output_text = ""
             for msg in st.session_state.messages[1:]:  # Bỏ prompt hệ thống
@@ -735,7 +727,7 @@ with st.sidebar:
             txt_file_name = f"BuoiHoc_{lesson_title_safe}.txt"
             pdf_file_name = f"BuoiHoc_{lesson_title_safe}.pdf"
     
-            # Nút tải file .txt
+            # Hiển thị nút tải file .txt
             st.download_button(
                 label="📄 Tải file .txt",
                 data=output_text,
@@ -743,13 +735,13 @@ with st.sidebar:
                 mime="text/plain"
             )
     
-            # Đăng ký font hỗ trợ Unicode
+            # Đăng ký font Unicode cho PDF
             pdfmetrics.registerFont(TTFont("DejaVu", "Data/fonts/DejaVuSans.ttf"))
     
-            # ✅ Tạo file PDF tạm
+            # Tạo file PDF tạm
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
                 c = canvas.Canvas(tmp_pdf.name, pagesize=letter)
-                c.setFont("DejaVu", 12)  # dùng font Unicode
+                c.setFont("DejaVu", 12)
     
                 width, height = letter
                 margin = 50
@@ -767,7 +759,7 @@ with st.sidebar:
     
                 c.save()
     
-                # Đọc lại file để tải về
+                # Đọc lại file PDF và hiển thị nút tải
                 with open(tmp_pdf.name, "rb") as f:
                     pdf_bytes = f.read()
     
@@ -778,7 +770,7 @@ with st.sidebar:
                     mime="application/pdf"
                 )
         else:
-            st.warning("⚠️ Chưa có nội dung để kết xuất.")
+            st.info("📌 Bạn chưa có nội dung hội thoại để xuất file.")
     
 st.title("🎓 Tutor AI")
 
